@@ -1,0 +1,52 @@
+/* Colors */
+:root {
+  --red: #ff0000;
+  --orange: #ff8200;
+  --yellow: #ffc100;
+  --dark: #02040f;
+  --light: #e5dada;
+}
+
+/* Fonts */
+@font-face {
+  font-family: Arvo;
+  src: url('/fonts/Arvo-Regular.ttf');
+  font-weight: 400;
+}
+@font-face {
+  font-family: Arvo;
+  src: url('/fonts/Arvo-Bold.ttf');
+  font-weight: 700;
+}
+@font-face {
+  font-family: Arvo;
+  src: url('/fonts/Arvo-Italic.ttf');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* Default Styles */
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arvo;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.row {
+  margin: 0;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Animations */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
