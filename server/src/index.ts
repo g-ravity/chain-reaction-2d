@@ -2,12 +2,19 @@ import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import express from 'express';
 import mongoose from 'mongoose';
 import keys from './config/keys';
+import resolvers from './graphql/resolvers';
+import { mergeTypeDefs } from '@graphql-tools/merge';
+import { loadFilesSync } from '@graphql-tools/load-files';
+import path from 'path';
 
 const app = express();
 
+const schemaArray = loadFilesSync(path.join(__dirname, './graphql/schema/'));
+const typeDefs = mergeTypeDefs(schemaArray);
+
 const schema = makeExecutableSchema({
-  typeDefs: [],
-  resolvers: null
+  typeDefs,
+  resolvers
 });
 
 const server = new ApolloServer({
@@ -31,6 +38,8 @@ mongoose
   .then(() => {
     console.log('Connected to MongoDB');
     server.applyMiddleware({ app, path: server.graphqlPath });
-    app.listen({ port: keys.port }, () => console.log(`Server ready at ${keys.port}`));
+    app.listen({ port: keys.port }, () =>
+      console.log(`Server ready at http://localhost:${keys.port}${server.graphqlPath}`)
+    );
   })
   .catch(() => console.log('Error while connecting to MongoDB'));

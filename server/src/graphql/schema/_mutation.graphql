@@ -1,0 +1,4 @@
+type Mutation {
+  # Room Mutation
+  createRoom: Room!
+}
