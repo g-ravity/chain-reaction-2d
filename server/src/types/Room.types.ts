@@ -5,3 +5,7 @@ export interface IRoom {
   memberCount: RoomModel['memberCount'];
   isPlaying: RoomModel['isPlaying'];
 }
+
+export interface JoinRoomArgs {
+  roomId: IRoom['roomId'];
+}

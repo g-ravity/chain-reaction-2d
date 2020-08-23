@@ -1,4 +1,5 @@
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
 import express from 'express';
 import mongoose from 'mongoose';
 import keys from './config/keys';
@@ -6,6 +7,9 @@ import resolvers from './graphql/resolvers';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import { loadFilesSync } from '@graphql-tools/load-files';
 import path from 'path';
+import { GQLContext } from './types';
+import Redis, { RedisOptions } from 'ioredis';
+import http from 'http';
 
 const app = express();
 
@@ -17,14 +21,36 @@ const schema = makeExecutableSchema({
   resolvers
 });
 
+const options: RedisOptions = {
+  host: keys.redisHost,
+  port: keys.redisPort,
+  keyPrefix: keys.nodeEnv,
+  password: keys.redisPassword,
+  retryStrategy: (times: number) => {
+    // reconnect after
+    return Math.min(times * 50, 2000);
+  }
+};
+
+const pubsub = new RedisPubSub({
+  publisher: new Redis(options),
+  subscriber: new Redis(options)
+});
+
 const server = new ApolloServer({
   schema,
+  context: ({ req, res }): GQLContext => ({ req, res, pubsub }),
   introspection: true,
   playground: true
 });
 
+server.applyMiddleware({ app, path: server.graphqlPath });
+
+const httpServer = http.createServer(app);
+server.installSubscriptionHandlers(httpServer);
+
 const dbConnectionString =
-  process.env.NODE_ENV === 'production'
+  keys.nodeEnv === 'production'
     ? `mongodb+srv://${keys.dbUser}:${keys.dbPassword}@ravikcluster-aiykj.mongodb.net/chain-reaction?retryWrites=true&w=majority`
     : 'mongodb://localhost/chain-reaction_db';
 
@@ -37,9 +63,8 @@ mongoose
   })
   .then(() => {
     console.log('Connected to MongoDB');
-    server.applyMiddleware({ app, path: server.graphqlPath });
-    app.listen({ port: keys.port }, () =>
-      console.log(`Server ready at http://localhost:${keys.port}${server.graphqlPath}`)
-    );
+    httpServer.listen({ port: keys.port }, () => {
+      console.log(`🚀 Server ready at http://localhost:${keys.port}${server.graphqlPath}`);
+    });
   })
   .catch(() => console.log('Error while connecting to MongoDB'));

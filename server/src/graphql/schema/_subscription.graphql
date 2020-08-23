@@ -1,0 +1,7 @@
+type Subscription {
+  playerJoined: Room!
+  playerLeft: Boolean
+  gameStarted: Boolean
+  changeTurn: Boolean
+  gameOver: Boolean
+}

@@ -1,7 +1,10 @@
-import { createRoom, getRooms } from './room.resolver';
+import { playerJoined, playerLeft, gameStarted, changeTurn, gameOver } from './subscription.resolver';
+import { createRoom, getRooms, joinRoom } from './room.resolver';
+
 const Mutation = {
   // Room Mutations
-  createRoom
+  createRoom,
+  joinRoom
 };
 
 const Query = {
@@ -9,6 +12,14 @@ const Query = {
   getRooms
 };
 
-const resolvers = { Query, Mutation };
+const Subscription = {
+  playerJoined,
+  playerLeft,
+  gameStarted,
+  changeTurn,
+  gameOver
+};
+
+const resolvers = { Query, Mutation, Subscription };
 
 export default resolvers;

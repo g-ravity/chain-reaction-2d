@@ -1,6 +1,8 @@
 import { generateId, cleanMongoObject } from '../../utils';
 import { Room } from '../../models';
-import { IRoom } from '../../types/Room.types';
+import { IRoom, JoinRoomArgs } from '../../types/Room.types';
+import { GQLContext } from '../../types';
+import keys from '../../config/keys';
 
 export const createRoom = async (): Promise<IRoom> => {
   try {
@@ -34,6 +36,27 @@ export const getRooms = async (): Promise<IRoom[]> => {
   try {
     const rooms = await Room.find({ isPlaying: false, memberCount: { $gte: 1, $lte: 7 } });
     return rooms.map(room => cleanMongoObject(room));
+  } catch (err) {
+    return err;
+  }
+};
+
+export const joinRoom = async (_: any, args: JoinRoomArgs, { pubsub }: GQLContext): Promise<IRoom> => {
+  try {
+    const room = await Room.findOne({ roomId: args.roomId });
+
+    if (!room) throw new Error('Room not found!');
+    if (room.memberCount === 8) throw new Error('Sorry, room is full!');
+    if (room.isPlaying) throw new Error('Game has already started. Cannot join room.');
+
+    room.memberCount = room.memberCount + 1;
+    await room.save();
+
+    pubsub.publish(keys.playerJoined, {
+      playerJoined: cleanMongoObject(room)
+    });
+
+    return cleanMongoObject(room);
   } catch (err) {
     return err;
   }
