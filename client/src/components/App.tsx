@@ -2,16 +2,17 @@ import styled from '@emotion/styled';
 import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
-import ReactDOMServer from 'react-dom/server';
 import Lottie, { Options } from 'react-lottie';
-import { isUndefined } from 'util';
+import { isEqual, isUndefined } from 'lodash';
 
+import animationData from '../assets/explosion.json';
 /**
  * Types
  */
 interface GridCell {
   hNeighbours: Array<number>;
   vNeighbours: Array<number>;
+  count: number;
   maxCount: number;
   explode: boolean;
 }
@@ -30,7 +31,7 @@ const App: React.FC = () => {
   const animationOptions: Options = {
     loop: false,
     autoplay: true,
-    animationData: require('../assets/explosion.json'),
+    animationData,
     rendererSettings: {
       preserveAspectRatio: 'xMidYMid slice'
     }
@@ -51,7 +52,8 @@ const App: React.FC = () => {
           hNeighbours,
           vNeighbours,
           maxCount: vNeighbours.length + hNeighbours.length - 1,
-          explode: false
+          explode: false,
+          count: 0
         });
       }
     }
@@ -62,27 +64,25 @@ const App: React.FC = () => {
   const addAtom = (row: number, col: number): void => {
     const elem = document.getElementById(row.toString() + col.toString());
     const parentElement = elem.firstChild as HTMLElement;
-    const gridCell = grid[row][col];
+    const gridCell = { ...grid[row][col] };
 
-    if (parentElement.childElementCount < gridCell.maxCount) {
-      const atom = ReactDOMServer.renderToStaticMarkup(
-        parentElement.childElementCount === 2 ? <Atom style={{ margin: '-3px' }} /> : <Atom />
-      );
+    if (isEqual([1, 3], gridCell.hNeighbours) && isEqual([3, 5], gridCell.vNeighbours)) console.log(gridCell);
 
-      const template = document.createElement('template');
-      template.innerHTML = atom;
-      parentElement.appendChild(template.content.firstChild);
+    if (gridCell.count < gridCell.maxCount) {
+      gridCell.count += 1;
 
-      if (parentElement.childElementCount === gridCell.maxCount - 1) parentElement.classList.add('medium-rotate');
-      if (parentElement.childElementCount === gridCell.maxCount)
-        parentElement.classList.replace('medium-rotate', 'high-rotate');
+      if (gridCell.count === gridCell.maxCount - 1) parentElement.classList.add('medium-rotate');
+      if (gridCell.count === gridCell.maxCount) parentElement.classList.replace('medium-rotate', 'high-rotate');
     } else {
+      gridCell.count = 0;
+      gridCell.explode = true;
+
       parentElement.innerHTML = '';
       gridCell.vNeighbours.forEach(val => addAtom(val, col));
       gridCell.hNeighbours.forEach(val => addAtom(row, val));
-      grid[row][col].explode = true;
-      setGrid([...grid]);
     }
+    grid[row][col] = gridCell;
+    setGrid([...grid]);
   };
 
   return (
@@ -103,6 +103,9 @@ const App: React.FC = () => {
                         key={jIndex.toString()}
                         onClick={(): void => addAtom(iIndex, jIndex)}
                         id={iIndex.toString() + jIndex.toString()}
+                        style={{
+                          pointerEvents: grid[iIndex][jIndex].explode ? 'none' : 'auto'
+                        }}
                       >
                         {grid[iIndex][jIndex].explode ? (
                           <Lottie
@@ -113,7 +116,6 @@ const App: React.FC = () => {
                               {
                                 eventName: 'DOMLoaded',
                                 callback: (): void => {
-                                  console.log('played audio');
                                   const audio = document.getElementById('audio') as HTMLAudioElement;
                                   audio.volume = 0.2;
                                   audio.play();
@@ -128,8 +130,10 @@ const App: React.FC = () => {
                               }
                             ]}
                           />
-                        ) : (
+                        ) : grid[iIndex][jIndex].count === 0 ? (
                           <div className="d-flex justify-content-center align-items-center flex-wrap" />
+                        ) : (
+                          Array.from(Array(grid[iIndex][jIndex].count).keys()).map(() => <Atom />)
                         )}
                       </Cell>
                     ))}
@@ -137,7 +141,10 @@ const App: React.FC = () => {
                 </div>
               ))}
         </div>
-        <audio id="audio" src={require('../assets/explosion.mp3')} />
+        {/* eslint-disable global-require */}
+        <audio id="audio" src={require('../assets/explosion.mp3')}>
+          <track kind="captions" srcLang="en" label="English" />
+        </audio>
       </Container>
     </div>
   );

@@ -2,14 +2,14 @@ import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import express from 'express';
 import mongoose from 'mongoose';
-import keys from './config/keys';
-import resolvers from './graphql/resolvers';
 import { mergeTypeDefs } from '@graphql-tools/merge';
 import { loadFilesSync } from '@graphql-tools/load-files';
 import path from 'path';
-import { GQLContext } from './types';
 import Redis, { RedisOptions } from 'ioredis';
 import http from 'http';
+import { GQLContext } from './types';
+import resolvers from './graphql/resolvers';
+import keys from './config/keys';
 
 const app = express();
 
