@@ -17,31 +17,31 @@ const schemaArray = loadFilesSync(path.join(__dirname, './graphql/schema/'));
 const typeDefs = mergeTypeDefs(schemaArray);
 
 const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers
+	typeDefs,
+	resolvers,
 });
 
 const options: RedisOptions = {
-  host: keys.redisHost,
-  port: keys.redisPort,
-  keyPrefix: keys.nodeEnv,
-  password: keys.redisPassword,
-  retryStrategy: (times: number) => {
-    // reconnect after
-    return Math.min(times * 50, 2000);
-  }
+	host: keys.redisHost,
+	port: keys.redisPort,
+	keyPrefix: keys.nodeEnv,
+	password: keys.redisPassword,
+	retryStrategy: (times: number) => {
+		// reconnect after
+		return Math.min(times * 50, 2000);
+	},
 };
 
 const pubsub = new RedisPubSub({
-  publisher: new Redis(options),
-  subscriber: new Redis(options)
+	publisher: new Redis(options),
+	subscriber: new Redis(options),
 });
 
 const server = new ApolloServer({
-  schema,
-  context: ({ req, res }): GQLContext => ({ req, res, pubsub }),
-  introspection: true,
-  playground: true
+	schema,
+	context: ({ req, res }): GQLContext => ({ req, res, pubsub }),
+	introspection: true,
+	playground: true,
 });
 
 server.applyMiddleware({ app, path: server.graphqlPath });
@@ -50,21 +50,21 @@ const httpServer = http.createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
 const dbConnectionString =
-  keys.nodeEnv === 'production'
-    ? `mongodb+srv://${keys.dbUser}:${keys.dbPassword}@ravikcluster-aiykj.mongodb.net/chain-reaction?retryWrites=true&w=majority`
-    : 'mongodb://localhost/chain-reaction_db';
+	keys.nodeEnv === 'production'
+		? `mongodb+srv://${keys.dbUser}:${keys.dbPassword}@ravikcluster-aiykj.mongodb.net/chain-reaction?retryWrites=true&w=majority`
+		: 'mongodb://localhost/chain-reaction_db';
 
 mongoose.set('useFindAndModify', false);
 mongoose
-  .connect(dbConnectionString, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true
-  })
-  .then(() => {
-    console.log('Connected to MongoDB');
-    httpServer.listen({ port: keys.port }, () => {
-      console.log(`🚀 Server ready at http://localhost:${keys.port}${server.graphqlPath}`);
-    });
-  })
-  .catch(() => console.log('Error while connecting to MongoDB'));
+	.connect(dbConnectionString, {
+		useNewUrlParser: true,
+		useCreateIndex: true,
+		useUnifiedTopology: true,
+	})
+	.then(() => {
+		console.log('Connected to MongoDB');
+		httpServer.listen({ port: keys.port }, () => {
+			console.log(`🚀 Server ready at http://localhost:${keys.port}${server.graphqlPath}`);
+		});
+	})
+	.catch(() => console.log('Error while connecting to MongoDB'));
