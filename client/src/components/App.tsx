@@ -20,6 +20,12 @@ interface GridCell {
 
 type Grid = Array<Array<GridCell>>;
 
+interface IAddAtom {
+	row: number;
+	col: number;
+	latestGrid: Grid;
+}
+
 /**
  * Component
  */
@@ -62,20 +68,17 @@ const App: React.FC = () => {
 		setGrid(chainGrid);
 	}, []);
 
-	const addAtom = (row: number, col: number): void => {
-		const elem = document.getElementById(row.toString() + col.toString());
-		const parentElement = elem.firstChild as HTMLElement;
-		const gridCell = { ...grid[row][col] };
+	const addAtom = ({ row, col, latestGrid }: IAddAtom): void => {
+		const gridCell = latestGrid[row][col];
+		const parentElement = document.getElementById(row.toString() + col.toString());
 
 		if (gridCell.count < gridCell.maxCount) {
+			gridCell.count++;
 			const atom = ReactDOMServer.renderToStaticMarkup(parentElement.childElementCount === 2 ? <Atom style={{ margin: '-3px' }} /> : <Atom />);
 
 			const template = document.createElement('template');
 			template.innerHTML = atom;
 			parentElement.appendChild(template.content.firstChild);
-
-			// eslint-disable-next-line
-			gridCell.count++;
 
 			if (gridCell.count === gridCell.maxCount - 1) parentElement.classList.add('medium-rotate');
 			if (gridCell.count === gridCell.maxCount) parentElement.classList.replace('medium-rotate', 'high-rotate');
@@ -84,9 +87,15 @@ const App: React.FC = () => {
 			gridCell.explode = true;
 
 			parentElement.innerHTML = '';
-			gridCell.vNeighbours.forEach((val) => addAtom(val, col));
-			gridCell.hNeighbours.forEach((val) => addAtom(row, val));
+			parentElement.classList.remove('high-rotate');
+			parentElement.classList.replace('d-flex', 'd-none');
+
+			latestGrid[row][col] = gridCell;
+
+			gridCell.vNeighbours.forEach((val) => addAtom({ row: val, col, latestGrid }));
+			gridCell.hNeighbours.forEach((val) => addAtom({ row, col: val, latestGrid }));
 		}
+
 		grid[row][col] = gridCell;
 		setGrid([...grid]);
 	};
@@ -104,13 +113,12 @@ const App: React.FC = () => {
 											<Cell
 												className="d-flex justify-content-center align-items-center overflow-hidden"
 												key={jIndex.toString()}
-												onClick={(): void => addAtom(iIndex, jIndex)}
-												id={iIndex.toString() + jIndex.toString()}
+												onClick={(): void => addAtom({ row: iIndex, col: jIndex, latestGrid: grid })}
 												style={{
 													pointerEvents: grid[iIndex][jIndex].explode ? 'none' : 'auto',
 												}}
 											>
-												{grid[iIndex][jIndex].explode ? (
+												{grid[iIndex][jIndex].explode && (
 													<Lottie
 														options={animationOptions}
 														height={150}
@@ -129,13 +137,14 @@ const App: React.FC = () => {
 																callback: (): void => {
 																	grid[iIndex][jIndex].explode = false;
 																	setGrid([...grid]);
+																	document.getElementById(iIndex.toString() + jIndex.toString()).classList.replace('d-none', 'd-flex');
 																},
 															},
 														]}
 													/>
-												) : (
-													<div className="d-flex justify-content-center align-items-center flex-wrap">{grid[iIndex][jIndex].count}</div>
 												)}
+
+												<div id={iIndex.toString() + jIndex.toString()} className="d-flex justify-content-center align-items-center flex-wrap" />
 											</Cell>
 										))}
 									</Row>
