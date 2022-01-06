@@ -2,8 +2,9 @@ import styled from '@emotion/styled';
 import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
+import ReactDOMServer from 'react-dom/server';
 import Lottie, { Options } from 'react-lottie';
-import { isEqual, isUndefined } from 'lodash';
+import isUndefined from 'lodash/isUndefined';
 
 import animationData from '../assets/explosion.json';
 /**
@@ -66,10 +67,15 @@ const App: React.FC = () => {
 		const parentElement = elem.firstChild as HTMLElement;
 		const gridCell = { ...grid[row][col] };
 
-		if (isEqual([1, 3], gridCell.hNeighbours) && isEqual([3, 5], gridCell.vNeighbours)) console.log(gridCell);
-
 		if (gridCell.count < gridCell.maxCount) {
-			gridCell.count += 1;
+			const atom = ReactDOMServer.renderToStaticMarkup(parentElement.childElementCount === 2 ? <Atom style={{ margin: '-3px' }} /> : <Atom />);
+
+			const template = document.createElement('template');
+			template.innerHTML = atom;
+			parentElement.appendChild(template.content.firstChild);
+
+			// eslint-disable-next-line
+			gridCell.count++;
 
 			if (gridCell.count === gridCell.maxCount - 1) parentElement.classList.add('medium-rotate');
 			if (gridCell.count === gridCell.maxCount) parentElement.classList.replace('medium-rotate', 'high-rotate');
@@ -127,10 +133,8 @@ const App: React.FC = () => {
 															},
 														]}
 													/>
-												) : grid[iIndex][jIndex].count === 0 ? (
-													<div className="d-flex justify-content-center align-items-center flex-wrap" />
 												) : (
-													Array.from(Array(grid[iIndex][jIndex].count).keys()).map(() => <Atom />)
+													<div className="d-flex justify-content-center align-items-center flex-wrap">{grid[iIndex][jIndex].count}</div>
 												)}
 											</Cell>
 										))}

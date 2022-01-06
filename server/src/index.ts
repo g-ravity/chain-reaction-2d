@@ -32,14 +32,14 @@ const options: RedisOptions = {
 	},
 };
 
-const pubsub = new RedisPubSub({
+const pubSub = new RedisPubSub({
 	publisher: new Redis(options),
 	subscriber: new Redis(options),
 });
 
 const server = new ApolloServer({
 	schema,
-	context: ({ req, res }): GQLContext => ({ req, res, pubsub }),
+	context: ({ req, res }): GQLContext => ({ req, res, pubsub: pubSub }),
 	introspection: true,
 	playground: true,
 });
