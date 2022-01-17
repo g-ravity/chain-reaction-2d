@@ -3,10 +3,9 @@ import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import ReactDOMServer from 'react-dom/server';
-import Lottie, { Options } from 'react-lottie';
 import isUndefined from 'lodash/isUndefined';
+import { ANIMATION_MAP, ANIMATION_TIME, GRID_HEIGHT, GRID_WIDTH } from '../utils/constants';
 
-import animationData from '../assets/explosion.json';
 /**
  * Types
  */
@@ -24,7 +23,38 @@ interface IAddAtom {
 	row: number;
 	col: number;
 	latestGrid: Grid;
+	isClicked?: boolean;
 }
+
+const playAudio = () => {
+	const audio = document.getElementById('audio') as HTMLAudioElement;
+	const clonedAudio = audio.cloneNode() as HTMLAudioElement;
+	clonedAudio.volume = 0.5;
+	clonedAudio.play();
+};
+
+const explosionAnimation = ({ row, col, type }: { row: number; col: number; type: 'PLAY' | 'RESET' }): void => {
+	switch (type) {
+		case 'PLAY': {
+			return Object.keys(ANIMATION_MAP).forEach((direction) => {
+				const animElem = document.getElementById(`${`${row.toString() + col.toString()}${direction}`}`);
+				animElem.classList.add(`move-${direction}`);
+				animElem.classList.replace('d-none', 'd-block');
+			});
+		}
+
+		case 'RESET': {
+			return Object.keys(ANIMATION_MAP).forEach((direction) => {
+				const animElem = document.getElementById(`${`${row.toString() + col.toString()}${direction}`}`);
+				animElem.classList.replace('d-block', 'd-none');
+				animElem.classList.remove(`move-${direction}`);
+			});
+		}
+
+		default:
+			return null;
+	}
+};
 
 /**
  * Component
@@ -32,17 +62,8 @@ interface IAddAtom {
 const App: React.FC = () => {
 	const [grid, setGrid] = useState<Grid>(undefined);
 
-	const width = 6;
-	const height = 9;
-
-	const animationOptions: Options = {
-		loop: false,
-		autoplay: true,
-		animationData,
-		rendererSettings: {
-			preserveAspectRatio: 'xMidYMid slice',
-		},
-	};
+	const width = GRID_WIDTH;
+	const height = GRID_HEIGHT;
 
 	useEffect(() => {
 		const chainGrid: Grid = [];
@@ -68,36 +89,46 @@ const App: React.FC = () => {
 		setGrid(chainGrid);
 	}, []);
 
-	const addAtom = ({ row, col, latestGrid }: IAddAtom): void => {
-		const gridCell = latestGrid[row][col];
-		const parentElement = document.getElementById(row.toString() + col.toString());
+	const addAtom = ({ row, col, latestGrid, isClicked = false }: IAddAtom): void => {
+		setTimeout(
+			() => {
+				const gridCell = latestGrid[row][col];
+				const parentElement = document.getElementById(row.toString() + col.toString());
 
-		if (gridCell.count < gridCell.maxCount) {
-			gridCell.count++;
-			const atom = ReactDOMServer.renderToStaticMarkup(parentElement.childElementCount === 2 ? <Atom style={{ margin: '-3px' }} /> : <Atom />);
+				if (gridCell.count < gridCell.maxCount) {
+					gridCell.count++;
+					const atom = ReactDOMServer.renderToStaticMarkup(parentElement.childElementCount === 2 ? <Atom style={{ margin: '-3px' }} /> : <Atom />);
 
-			const template = document.createElement('template');
-			template.innerHTML = atom;
-			parentElement.appendChild(template.content.firstChild);
+					const template = document.createElement('template');
+					template.innerHTML = atom;
+					parentElement.appendChild(template.content.firstChild);
 
-			if (gridCell.count === gridCell.maxCount - 1) parentElement.classList.add('medium-rotate');
-			if (gridCell.count === gridCell.maxCount) parentElement.classList.replace('medium-rotate', 'high-rotate');
-		} else {
-			gridCell.count = 0;
-			gridCell.explode = true;
+					if (gridCell.count === gridCell.maxCount - 1) parentElement.classList.add('medium-rotate');
+					if (gridCell.count === gridCell.maxCount) parentElement.classList.replace('medium-rotate', 'high-rotate');
+				} else {
+					gridCell.count = 0;
 
-			parentElement.innerHTML = '';
-			parentElement.classList.remove('high-rotate');
-			parentElement.classList.replace('d-flex', 'd-none');
+					parentElement.innerHTML = '';
+					parentElement.classList.remove('high-rotate');
 
-			latestGrid[row][col] = gridCell;
+					explosionAnimation({ row, col, type: 'PLAY' });
+					playAudio();
 
-			gridCell.vNeighbours.forEach((val) => addAtom({ row: val, col, latestGrid }));
-			gridCell.hNeighbours.forEach((val) => addAtom({ row, col: val, latestGrid }));
-		}
+					setTimeout(() => {
+						explosionAnimation({ row, col, type: 'RESET' });
+					}, ANIMATION_TIME + 50);
 
-		grid[row][col] = gridCell;
-		setGrid([...grid]);
+					latestGrid[row][col] = gridCell;
+
+					gridCell.vNeighbours.forEach((val) => addAtom({ row: val, col, latestGrid }));
+					gridCell.hNeighbours.forEach((val) => addAtom({ row, col: val, latestGrid }));
+				}
+
+				grid[row][col] = gridCell;
+				setGrid([...grid]);
+			},
+			isClicked ? 0 : ANIMATION_TIME,
+		);
 	};
 
 	return (
@@ -110,47 +141,36 @@ const App: React.FC = () => {
 								<div key={iIndex.toString()}>
 									<Row className="justify-content-center">
 										{grid[iIndex].map((__, jIndex) => (
-											<Cell
-												className="d-flex justify-content-center align-items-center overflow-hidden"
-												key={jIndex.toString()}
-												onClick={(): void => addAtom({ row: iIndex, col: jIndex, latestGrid: grid })}
-												style={{
-													pointerEvents: grid[iIndex][jIndex].explode ? 'none' : 'auto',
-												}}
-											>
-												{grid[iIndex][jIndex].explode && (
-													<Lottie
-														options={animationOptions}
-														height={150}
-														width={150}
-														eventListeners={[
-															{
-																eventName: 'DOMLoaded',
-																callback: (): void => {
-																	const audio = document.getElementById('audio') as HTMLAudioElement;
-																	audio.volume = 0.2;
-																	audio.play();
-																},
-															},
-															{
-																eventName: 'complete',
-																callback: (): void => {
-																	grid[iIndex][jIndex].explode = false;
-																	setGrid([...grid]);
-																	document.getElementById(iIndex.toString() + jIndex.toString()).classList.replace('d-none', 'd-flex');
-																},
-															},
-														]}
-													/>
-												)}
-
-												<div id={iIndex.toString() + jIndex.toString()} className="d-flex justify-content-center align-items-center flex-wrap" />
-											</Cell>
+											<>
+												<Cell
+													className="d-flex justify-content-center align-items-center"
+													key={jIndex.toString()}
+													onClick={(): void => addAtom({ row: iIndex, col: jIndex, latestGrid: grid, isClicked: true })}
+													style={{
+														pointerEvents: grid[iIndex][jIndex].explode ? 'none' : 'auto',
+													}}
+												>
+													<div id={iIndex.toString() + jIndex.toString()} className="d-flex justify-content-center align-items-center flex-wrap" />
+													{[...Array(grid[iIndex][jIndex].maxCount + 1).keys()].map((index) => (
+														<Cell
+															id={iIndex.toString() + jIndex.toString() + Object.keys(ANIMATION_MAP)[index]}
+															className="d-none position-absolute justify-content-center align-items-center overflow-hidden"
+															key={`${jIndex.toString()}-move-${Object.keys(ANIMATION_MAP)[index]}`}
+															style={{ border: 'none' }}
+														>
+															<div className="d-flex justify-content-center align-items-center flex-wrap h-100">
+																<Atom />
+															</div>
+														</Cell>
+													))}
+												</Cell>
+											</>
 										))}
 									</Row>
 								</div>
 						  ))}
 				</div>
+
 				{/* eslint-disable global-require */}
 				<audio id="audio" src={require('../assets/explosion.mp3')}>
 					<track kind="captions" srcLang="en" label="English" />
@@ -186,6 +206,22 @@ const Cell = styled.div`
 
 	.high-rotate {
 		animation: rotate 1s linear infinite;
+	}
+
+	.move-up {
+		animation: move-up ${ANIMATION_TIME / 1000}s linear forwards;
+	}
+
+	.move-down {
+		animation: move-down ${ANIMATION_TIME / 1000}s linear forwards;
+	}
+
+	.move-left {
+		animation: move-left ${ANIMATION_TIME / 1000}s linear forwards;
+	}
+
+	.move-right {
+		animation: move-right ${ANIMATION_TIME / 1000}s linear forwards;
 	}
 `;
 

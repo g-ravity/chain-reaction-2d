@@ -70,7 +70,7 @@ module.exports = {
 		'react/static-property-placement': 'off',
 		'react/state-in-constructor': 'off',
 		camelcase: 'warn',
-    'no-plusplus': 'warn',
+		'no-plusplus': 'warn',
 		'prettier/prettier': [
 			'error',
 			{
