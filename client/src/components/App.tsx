@@ -4,14 +4,17 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import ReactDOMServer from 'react-dom/server';
 import isUndefined from 'lodash/isUndefined';
-import { ANIMATION_MAP, ANIMATION_TIME, GRID_HEIGHT, GRID_WIDTH } from '../utils/constants';
+import { ANIMATION_TIME, GRID_HEIGHT, GRID_WIDTH } from '../utils/constants';
 
 /**
  * Types
  */
+type TDirection = 'left' | 'right' | 'up' | 'down';
+
 interface GridCell {
 	hNeighbours: Array<number>;
 	vNeighbours: Array<number>;
+	explodeDirections: Array<TDirection>;
 	count: number;
 	maxCount: number;
 	explode: boolean;
@@ -33,10 +36,10 @@ const playAudio = () => {
 	clonedAudio.play();
 };
 
-const explosionAnimation = ({ row, col, type }: { row: number; col: number; type: 'PLAY' | 'RESET' }): void => {
+const explosionAnimation = ({ row, col, elem, type }: { row: number; col: number; elem: GridCell; type: 'PLAY' | 'RESET' }): void => {
 	switch (type) {
 		case 'PLAY': {
-			return Object.keys(ANIMATION_MAP).forEach((direction) => {
+			return elem.explodeDirections.forEach((direction) => {
 				const animElem = document.getElementById(`${`${row.toString() + col.toString()}${direction}`}`);
 				animElem.classList.add(`move-${direction}`);
 				animElem.classList.replace('d-none', 'd-block');
@@ -44,7 +47,7 @@ const explosionAnimation = ({ row, col, type }: { row: number; col: number; type
 		}
 
 		case 'RESET': {
-			return Object.keys(ANIMATION_MAP).forEach((direction) => {
+			return elem.explodeDirections.forEach((direction) => {
 				const animElem = document.getElementById(`${`${row.toString() + col.toString()}${direction}`}`);
 				animElem.classList.replace('d-block', 'd-none');
 				animElem.classList.remove(`move-${direction}`);
@@ -72,13 +75,27 @@ const App: React.FC = () => {
 			for (let j = 0; j < width; j += 1) {
 				const vNeighbours: Array<number> = [];
 				const hNeighbours: Array<number> = [];
-				if (i - 1 >= 0) vNeighbours.push(i - 1);
-				if (i + 1 < height) vNeighbours.push(i + 1);
-				if (j - 1 >= 0) hNeighbours.push(j - 1);
-				if (j + 1 < width) hNeighbours.push(j + 1);
+				const explodeDirections: Array<TDirection> = [];
+				if (i - 1 >= 0) {
+					vNeighbours.push(i - 1);
+					explodeDirections.push('up');
+				}
+				if (i + 1 < height) {
+					vNeighbours.push(i + 1);
+					explodeDirections.push('down');
+				}
+				if (j - 1 >= 0) {
+					hNeighbours.push(j - 1);
+					explodeDirections.push('left');
+				}
+				if (j + 1 < width) {
+					hNeighbours.push(j + 1);
+					explodeDirections.push('right');
+				}
 				chainGrid[i].push({
 					hNeighbours,
 					vNeighbours,
+					explodeDirections,
 					maxCount: vNeighbours.length + hNeighbours.length - 1,
 					explode: false,
 					count: 0,
@@ -111,11 +128,11 @@ const App: React.FC = () => {
 					parentElement.innerHTML = '';
 					parentElement.classList.remove('high-rotate');
 
-					explosionAnimation({ row, col, type: 'PLAY' });
+					explosionAnimation({ row, col, elem: grid[row][col], type: 'PLAY' });
 					playAudio();
 
 					setTimeout(() => {
-						explosionAnimation({ row, col, type: 'RESET' });
+						explosionAnimation({ row, col, elem: grid[row][col], type: 'RESET' });
 					}, ANIMATION_TIME + 50);
 
 					latestGrid[row][col] = gridCell;
@@ -153,9 +170,9 @@ const App: React.FC = () => {
 													<div id={iIndex.toString() + jIndex.toString()} className="d-flex justify-content-center align-items-center flex-wrap" />
 													{[...Array(grid[iIndex][jIndex].maxCount + 1).keys()].map((index) => (
 														<Cell
-															id={iIndex.toString() + jIndex.toString() + Object.keys(ANIMATION_MAP)[index]}
+															id={iIndex.toString() + jIndex.toString() + grid[iIndex][jIndex].explodeDirections[index]}
 															className="d-none position-absolute justify-content-center align-items-center overflow-hidden"
-															key={`${jIndex.toString()}-move-${Object.keys(ANIMATION_MAP)[index]}`}
+															key={`${jIndex.toString()}-move-${grid[iIndex][jIndex].explodeDirections[index]}`}
 															style={{ border: 'none' }}
 														>
 															<div className="d-flex justify-content-center align-items-center flex-wrap h-100">
