@@ -14,6 +14,7 @@
     "@graphql-tools/load-files": "^6.5.3",
     "@graphql-tools/merge": "^8.2.1",
     "@graphql-tools/schema": "^8.3.1",
+    "apollo-server-core": "^3.6.2",
     "apollo-server-express": "^3.6.2",
     "dotenv-safe": "^8.2.0",
     "express": "^4.17.2",

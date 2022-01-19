@@ -1,4 +1,5 @@
 import { ApolloServer } from 'apollo-server-express';
+import { ApolloServerPluginLandingPageGraphQLPlayground } from 'apollo-server-core';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { execute, subscribe } from 'graphql';
@@ -47,6 +48,7 @@ config();
 		context: ({ req, res }): GQLContext => ({ req, res, pubsub: pubSub }),
 		introspection: true,
 		plugins: [
+			ApolloServerPluginLandingPageGraphQLPlayground({}),
 			{
 				async serverWillStart() {
 					return {
