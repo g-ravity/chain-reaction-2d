@@ -29,6 +29,9 @@ interface IAddAtom {
 	isClicked?: boolean;
 }
 
+/**
+ * Utility Functions
+ */
 const playAudio = () => {
 	const audio = document.getElementById('audio') as HTMLAudioElement;
 	const clonedAudio = audio.cloneNode() as HTMLAudioElement;
