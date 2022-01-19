@@ -1,4 +1,4 @@
-import { RoomModel } from '../models';
+import { RoomModel } from '../models/room.model';
 
 export interface IRoom {
 	roomId: RoomModel['roomId'];

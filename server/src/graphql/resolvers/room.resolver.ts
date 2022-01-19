@@ -1,8 +1,8 @@
-import { generateId, cleanMongoObject } from '../../utils';
-import { Room } from '../../models';
 import { IRoom, JoinRoomArgs } from '../../types/Room.types';
-import { GQLContext } from '../../types';
-import keys from '../../config/keys';
+import { GQLContext } from '../../types/General.types';
+import { GAME_EVENTS } from '../../utils/constants';
+import { cleanMongoObject, generateId } from '../../utils/commonHelpers';
+import { Room } from '../../models/room.model';
 
 export const createRoom = async (): Promise<void | IRoom> => {
 	try {
@@ -54,7 +54,7 @@ export const joinRoom = async (_: any, args: JoinRoomArgs, { pubsub }: GQLContex
 		room.memberCount += 1;
 		await room.save();
 
-		pubsub.publish(keys.playerJoined, {
+		pubsub.publish(GAME_EVENTS.PLAYER_JOINED, {
 			playerJoined: cleanMongoObject(room),
 		});
 
