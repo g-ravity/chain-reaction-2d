@@ -14,6 +14,7 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { config } from 'dotenv-safe';
 import { GQLContext } from './types/General.types';
 import resolvers from './graphql/resolvers';
+import { logger } from './utils/logger';
 
 config();
 
@@ -68,10 +69,11 @@ config();
 			schema,
 			execute,
 			subscribe,
-			onConnect() {
-				// lookup userId by token, etc.
-				// return { userId };
-			},
+			/*
+      TODO: return data from here that will be passed
+      as context to subscription resolvers
+      */
+			onConnect() {},
 		},
 		{
 			server: httpServer,
@@ -86,10 +88,10 @@ config();
 	mongoose
 		.connect(process.env.DB_URI)
 		.then(() => {
-			console.log('Connected to MongoDB');
+			logger.log('Connected to MongoDB');
 			httpServer.listen({ port: +process.env.PORT }, () => {
-				console.log(`🚀 Server ready at http://localhost:${process.env.PORT}${server.graphqlPath}`);
+				logger.log(`🚀 Server running on PORT ${process.env.PORT}`);
 			});
 		})
-		.catch(() => console.log('Error while connecting to MongoDB'));
+		.catch((error) => logger.error('Error while connecting to MongoDB: ', error));
 })();
