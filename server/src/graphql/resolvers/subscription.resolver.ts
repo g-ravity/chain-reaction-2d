@@ -2,17 +2,27 @@ import { GQLContext } from '../../types/General.types';
 import { GAME_EVENTS } from '../../utils/constants';
 
 export const playerJoined = {
-	subscribe: (_: any, __: any, { pubsub }: GQLContext) => pubsub.asyncIterator(GAME_EVENTS.PLAYER_JOINED),
+	subscribe: (_: unknown, __: unknown, { pubsub }: GQLContext): AsyncIterator<unknown, unknown, undefined> => {
+		return pubsub.asyncIterator(GAME_EVENTS.PLAYER_JOINED);
+	},
 };
 export const playerLeft = {
-	subscribe: (_: any, __: any, { pubsub }: GQLContext) => pubsub.asyncIterator([GAME_EVENTS.PLAYER_LEFT]),
+	subscribe: (_: unknown, __: unknown, { pubsub }: GQLContext): AsyncIterator<unknown, unknown, undefined> => {
+		return pubsub.asyncIterator([GAME_EVENTS.PLAYER_LEFT]);
+	},
 };
 export const gameStarted = {
-	subscribe: (_: any, __: any, { pubsub }: GQLContext) => pubsub.asyncIterator([GAME_EVENTS.GAME_STARTED]),
+	subscribe: (_: unknown, __: unknown, { pubsub }: GQLContext): AsyncIterator<unknown, unknown, undefined> => {
+		return pubsub.asyncIterator([GAME_EVENTS.GAME_STARTED]);
+	},
 };
 export const changeTurn = {
-	subscribe: (_: any, __: any, { pubsub }: GQLContext) => pubsub.asyncIterator([GAME_EVENTS.CHANGE_TURN]),
+	subscribe: (_: unknown, __: unknown, { pubsub }: GQLContext): AsyncIterator<unknown, unknown, undefined> => {
+		return pubsub.asyncIterator([GAME_EVENTS.CHANGE_TURN]);
+	},
 };
 export const gameOver = {
-	subscribe: (_: any, __: any, { pubsub }: GQLContext) => pubsub.asyncIterator([GAME_EVENTS.GAME_OVER]),
+	subscribe: (_: unknown, __: unknown, { pubsub }: GQLContext): AsyncIterator<unknown, unknown, undefined> => {
+		return pubsub.asyncIterator([GAME_EVENTS.GAME_OVER]);
+	},
 };

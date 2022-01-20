@@ -1,15 +1,15 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
-export interface RoomModel extends Document {
+export interface IRoomModel {
 	roomId: string;
 	memberCount: number;
 	isPlaying: boolean;
 }
 
-const roomSchema: Schema = new Schema({
+const roomSchema = new Schema<IRoomModel>({
 	roomId: { type: String, required: true },
 	memberCount: { type: Number, min: 1, max: 8 },
 	isPlaying: { type: Boolean, default: false },
 });
 
-export const Room = mongoose.model<RoomModel>('room', roomSchema);
+export const RoomModel = mongoose.model<IRoomModel>('room', roomSchema);

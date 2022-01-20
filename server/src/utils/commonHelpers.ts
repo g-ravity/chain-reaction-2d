@@ -1,6 +1,7 @@
 import omit from 'lodash/omit';
 import transform from 'lodash/transform';
 import isObject from 'lodash/isObject';
+import { Document } from 'mongoose';
 
 export const replaceKeysDeep = (obj: Record<string, any>, keysMap: Record<string, string>): Record<string, any> => {
 	return transform(obj, (result, value, key) => {
@@ -9,7 +10,7 @@ export const replaceKeysDeep = (obj: Record<string, any>, keysMap: Record<string
 	});
 };
 
-export const cleanMongoObject = (obj: Record<string, unknown>, keysMap: Record<string, string> = {}): Record<string, unknown> => replaceKeysDeep(omit(obj, ['__v']), { _id: 'id', ...keysMap });
+export const cleanMongoObject = (obj: Document<any>, keysMap: Record<string, string> = {}): Record<string, unknown> => replaceKeysDeep(omit(obj, ['__v']), { _id: 'id', ...keysMap });
 
 export const generateId = ({ length, isNumeric = true }: { length: number; isNumeric?: boolean }): string => {
 	let result = '';
