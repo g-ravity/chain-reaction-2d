@@ -1,5 +1,5 @@
 type Mutation {
   # Room Mutation
-  createRoom: Room!
-  joinRoom(roomId: String!): Room!
+  createRoom(params: CreateRoomArgs): Room
+  joinRoom(roomId: String!): Room
 }

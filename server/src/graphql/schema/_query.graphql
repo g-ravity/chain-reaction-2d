@@ -1,4 +1,4 @@
 type Query {
   # Room Mutation
-  getRooms: [Room]!
+  getRooms: [Room]
 }

@@ -1,16 +1,20 @@
 import omit from 'lodash/omit';
 import transform from 'lodash/transform';
 import isObject from 'lodash/isObject';
-import { Document } from 'mongoose';
+import { Types } from 'mongoose';
 
 export const replaceKeysDeep = (obj: Record<string, any>, keysMap: Record<string, string>): Record<string, any> => {
 	return transform(obj, (result, value, key) => {
 		const currentKey = (keysMap[key] || key) as string;
-		result[currentKey] = isObject(value) ? replaceKeysDeep(value as Record<string, any>, keysMap) : value;
+		result[currentKey] =
+			isObject(value) && !(value instanceof Types.ObjectId) ? replaceKeysDeep(value as Record<string, any>, keysMap) : value;
 	});
 };
 
-export const cleanMongoObject = (obj: Document<any>, keysMap: Record<string, string> = {}): Record<string, unknown> => replaceKeysDeep(omit(obj, ['__v']), { _id: 'id', ...keysMap });
+export const cleanMongoObject = (obj: Record<string, unknown>, keysMap: Record<string, string> = {}): Record<string, unknown> =>
+	replaceKeysDeep(omit(obj, ['__v']), { _id: 'id', ...keysMap });
+
+export const isNotEmptyObject = (obj: Record<string, unknown>): boolean => obj && Object.keys(obj).length > 0;
 
 export const generateId = ({ length, isNumeric = true }: { length: number; isNumeric?: boolean }): string => {
 	let result = '';

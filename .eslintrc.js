@@ -77,7 +77,7 @@ module.exports = {
 			'error',
 			{
 				useTabs: true,
-				printWidth: 200,
+				printWidth: 140,
 				tabWidth: 4,
 				singleQuote: true,
 				semi: true,

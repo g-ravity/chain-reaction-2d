@@ -1,6 +1,18 @@
 type Room {
-  id: String!
-  roomId: String!
-  memberCount: Int!
-  isPlaying: Boolean!
+  id: String
+  roomId: String
+  memberCount: Int
+  maxMemberCount: Int
+  isActive: Boolean
+  hasGameStarted: Boolean
+  roomType: GameRoomEnum
+}
+
+input CreateRoomArgs {
+  maxMemberCount: Int!
+}
+
+enum GameRoomEnum {
+  PUBLIC
+  PRIVATE
 }
