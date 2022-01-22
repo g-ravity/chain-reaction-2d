@@ -31,3 +31,5 @@ export const generateId = ({ length, isNumeric = true }: { length: number; isNum
 
 	return result;
 };
+
+export const MongoIdType = (id: string): Types.ObjectId => new Types.ObjectId(id);

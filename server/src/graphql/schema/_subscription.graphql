@@ -1,5 +1,5 @@
 type Subscription {
-  playerJoined: Room
+  playerJoined(params: RoomArgs): PlayerJoinedRoom
   playerLeft: Boolean
   gameStarted: Boolean
   changeTurn: Boolean

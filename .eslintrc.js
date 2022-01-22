@@ -56,6 +56,7 @@ module.exports = {
 			},
 		],
 		'no-shadow': 'off',
+		'no-underscore-dangle': 'off',
 		'@typescript-eslint/no-shadow': 'error',
 		'no-param-reassign': ['warn', { props: false }],
 		'no-use-before-define': 'off',

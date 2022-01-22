@@ -8,6 +8,11 @@ type Room {
   roomType: GameRoomEnum
 }
 
+type PlayerJoinedRoom {
+  roomId: String
+  room: Room
+}
+
 input CreateRoomArgs {
   maxMemberCount: Int!
 }
@@ -16,6 +21,10 @@ input GetRoomsArgs {
   roomType: GameRoomEnum!
   hasGameStarted: Boolean!
   isRoomFull: Boolean
+}
+
+input RoomArgs {
+  roomId: String
 }
 
 enum GameRoomEnum {

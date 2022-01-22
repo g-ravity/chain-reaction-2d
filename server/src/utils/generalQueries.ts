@@ -35,7 +35,7 @@ export const findOneAndUpdateQuery = async <T>(
 	Model: TModel<T>,
 	params: FilterQuery<T>,
 	valuesToUpdate: UpdateQuery<T>,
-	options: QueryOptions,
+	options?: QueryOptions,
 ): Promise<Record<string, unknown>> => {
 	const data = await Model.findOneAndUpdate(params, valuesToUpdate, options);
 
@@ -45,7 +45,7 @@ export const findOneAndUpdateQuery = async <T>(
 export const findOneAndDeleteQuery = async <T>(
 	Model: TModel<T>,
 	params: FilterQuery<T>,
-	options: QueryOptions,
+	options?: QueryOptions,
 ): Promise<Record<string, unknown>> => {
 	const data = await Model.findOneAndDelete(params, options);
 
