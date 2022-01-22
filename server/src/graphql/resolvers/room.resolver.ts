@@ -2,11 +2,11 @@ import * as yup from 'yup';
 import { TRoom, TJoinRoomArgs } from '../../types/Room.types';
 import { GQLContext } from '../../types/General.types';
 import { GAME_EVENTS } from '../../utils/constants';
-import { cleanMongoObject, generateId } from '../../utils/commonHelpers';
+import { cleanMongoObject, generateId, omitWrapper } from '../../utils/commonHelpers';
 import { IRoomModel, RoomModel } from '../../models/room.model';
 import { logger } from '../../utils/logger';
 import { validateInput } from '../../utils/validateInput';
-import { saveQuery } from '../../utils/generalQueries';
+import { findQuery, saveQuery } from '../../utils/generalQueries';
 
 /**
  * Types
@@ -15,11 +15,21 @@ type TCreateRoomArgs = {
 	maxMemberCount: number;
 };
 
+type TGetRoomsArgs = Pick<TRoom, 'roomType' | 'hasGameStarted'> & {
+	isRoomFull?: boolean;
+};
+
 /**
  * Validation Schemas
  */
 export const CreateRoomSchema: yup.SchemaOf<TCreateRoomArgs> = yup.object({
 	maxMemberCount: yup.number().required(),
+});
+
+export const GetRoomsSchema: yup.SchemaOf<TGetRoomsArgs> = yup.object({
+	roomType: yup.mixed().oneOf(['PUBLIC', 'PRIVATE']).required(),
+	hasGameStarted: yup.boolean().required(),
+	isRoomFull: yup.boolean(),
 });
 
 /**
@@ -47,11 +57,19 @@ export const createRoom = async (_: unknown, { params }: { params: TCreateRoomAr
 	}
 };
 
-export const getRooms = async (): Promise<TRoom[] | unknown> => {
+export const getRooms = async (_: unknown, { params }: { params: TGetRoomsArgs }): Promise<TRoom[] | unknown> => {
 	try {
-		const rooms = await RoomModel.find({ isPlaying: false, memberCount: { $gte: 1, $lte: 7 } });
+		validateInput(GetRoomsSchema, params);
 
-		return rooms.map((room) => cleanMongoObject(room as any) as TRoom);
+		const rooms = await findQuery<IRoomModel>(RoomModel, {
+			isActive: true,
+			...omitWrapper(params, ['isRoomFull']),
+			...(params.isRoomFull
+				? { $expr: { $eq: ['$maxMemberCount', '$memberCount'] } }
+				: { $expr: { $lt: ['$memberCount', '$maxMemberCount'] } }),
+		});
+
+		return rooms.map((room) => cleanMongoObject(room) as TRoom);
 	} catch (err) {
 		logger.error('Error while fetching rooms: ', err);
 		return err;

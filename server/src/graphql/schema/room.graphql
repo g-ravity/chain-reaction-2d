@@ -12,6 +12,12 @@ input CreateRoomArgs {
   maxMemberCount: Int!
 }
 
+input GetRoomsArgs {
+  roomType: GameRoomEnum!
+  hasGameStarted: Boolean!
+  isRoomFull: Boolean
+}
+
 enum GameRoomEnum {
   PUBLIC
   PRIVATE

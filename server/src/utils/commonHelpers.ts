@@ -1,7 +1,11 @@
 import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 import transform from 'lodash/transform';
 import isObject from 'lodash/isObject';
 import { Types } from 'mongoose';
+
+export const pickWrapper = (object: Record<string, unknown>, keys: string[]): Record<string, unknown> => pick(object, keys);
+export const omitWrapper = (object: Record<string, unknown>, keys: string[]): Record<string, unknown> => omit(object, keys);
 
 export const replaceKeysDeep = (obj: Record<string, any>, keysMap: Record<string, string>): Record<string, any> => {
 	return transform(obj, (result, value, key) => {
@@ -12,7 +16,7 @@ export const replaceKeysDeep = (obj: Record<string, any>, keysMap: Record<string
 };
 
 export const cleanMongoObject = (obj: Record<string, unknown>, keysMap: Record<string, string> = {}): Record<string, unknown> =>
-	replaceKeysDeep(omit(obj, ['__v']), { _id: 'id', ...keysMap });
+	replaceKeysDeep(omitWrapper(obj, ['__v']), { _id: 'id', ...keysMap });
 
 export const isNotEmptyObject = (obj: Record<string, unknown>): boolean => obj && Object.keys(obj).length > 0;
 
