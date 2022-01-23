@@ -1,10 +1,16 @@
 /* Colors */
 :root {
-  --red: #ff0000;
-  --orange: #ff8200;
-  --yellow: #ffc100;
-  --dark: #02040f;
-  --light: #e5dada;
+  --color-1: #F9859B;
+  --color-2: #FFAE78;
+  --color-3: #ffc100;
+  --color-4: #BE61E5;
+  --color-5: #BFEA46;
+  --color-6: #52E4AF;
+  --color-7: #2BCAEF;
+  --color-8: #5690F6;
+  --dark: #02040fcb;
+  --light: #fdf8f3;
+  --semi-dark: #cccccc;
 }
 
 /* Fonts */

@@ -53,11 +53,6 @@ config();
 			schema,
 			execute,
 			subscribe,
-			/*
-      TODO: return data from here that will be passed
-      as context to subscription resolvers
-      */
-			onConnect() {},
 		},
 		{
 			server: httpServer,

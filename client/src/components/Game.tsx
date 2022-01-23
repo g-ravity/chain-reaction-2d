@@ -65,7 +65,7 @@ const explosionAnimation = ({ row, col, elem, type }: { row: number; col: number
 /**
  * Component
  */
-const App: React.FC = () => {
+const Game: React.FC = () => {
 	const [grid, setGrid] = useState<Grid>(undefined);
 
 	const width = GRID_WIDTH;
@@ -116,8 +116,10 @@ const App: React.FC = () => {
 				const parentElement = document.getElementById(row.toString() + col.toString());
 
 				if (gridCell.count < gridCell.maxCount) {
-					gridCell.count++;
-					const atom = ReactDOMServer.renderToStaticMarkup(parentElement.childElementCount === 2 ? <Atom style={{ margin: '-3px' }} /> : <Atom />);
+					gridCell.count += 1;
+					const atom = ReactDOMServer.renderToStaticMarkup(
+						parentElement.childElementCount === 2 ? <Atom style={{ margin: '-3px' }} /> : <Atom />,
+					);
 
 					const template = document.createElement('template');
 					template.innerHTML = atom;
@@ -152,7 +154,10 @@ const App: React.FC = () => {
 	};
 
 	return (
-		<div className="vw-100 vh-100 overflow-hidden d-flex flex-column justify-content-center" style={{ backgroundColor: 'var(--dark)' }}>
+		<div
+			className="vw-100 vh-100 overflow-hidden d-flex flex-column justify-content-center"
+			style={{ backgroundColor: 'var(--light)' }}
+		>
 			<Container>
 				<div className="d-flex flex-column justify-content-center">
 					{isUndefined(grid)
@@ -165,17 +170,28 @@ const App: React.FC = () => {
 												<Cell
 													className="d-flex justify-content-center align-items-center"
 													key={jIndex.toString()}
-													onClick={(): void => addAtom({ row: iIndex, col: jIndex, latestGrid: grid, isClicked: true })}
+													onClick={(): void =>
+														addAtom({ row: iIndex, col: jIndex, latestGrid: grid, isClicked: true })
+													}
 													style={{
 														pointerEvents: grid[iIndex][jIndex].explode ? 'none' : 'auto',
 													}}
 												>
-													<div id={iIndex.toString() + jIndex.toString()} className="d-flex justify-content-center align-items-center flex-wrap" />
+													<div
+														id={iIndex.toString() + jIndex.toString()}
+														className="d-flex justify-content-center align-items-center flex-wrap"
+													/>
 													{[...Array(grid[iIndex][jIndex].maxCount + 1).keys()].map((index) => (
 														<Cell
-															id={iIndex.toString() + jIndex.toString() + grid[iIndex][jIndex].explodeDirections[index]}
+															id={
+																iIndex.toString() +
+																jIndex.toString() +
+																grid[iIndex][jIndex].explodeDirections[index]
+															}
 															className="d-none position-absolute justify-content-center align-items-center overflow-hidden"
-															key={`${jIndex.toString()}-move-${grid[iIndex][jIndex].explodeDirections[index]}`}
+															key={`${jIndex.toString()}-move-${
+																grid[iIndex][jIndex].explodeDirections[index]
+															}`}
 															style={{ border: 'none' }}
 														>
 															<div className="d-flex justify-content-center align-items-center flex-wrap h-100">
@@ -207,17 +223,17 @@ const Cell = styled.div`
 	width: 50px;
 	height: 50px;
 	cursor: pointer;
-	border: 1px solid var(--light);
+	border: 2px solid var(--dark);
 	box-sizing: content-box;
 
 	@media (min-width: 576px) and (min-height: 768px) {
-		width: 80px;
-		height: 80px;
+		width: 70px;
+		height: 70px;
 	}
 
 	@media (min-width: 992px) and (min-height: 1366px) {
-		width: 100px;
-		height: 100px;
+		width: 85px;
+		height: 85px;
 	}
 
 	.medium-rotate {
@@ -246,23 +262,23 @@ const Cell = styled.div`
 `;
 
 const Atom = styled.div`
-	background-color: var(--red);
+	background-color: var(--color-4);
 	width: 15px;
 	height: 15px;
 	border-radius: 15px;
 	margin: 2px;
 
 	@media (min-width: 576px) and (min-height: 768px) {
+		width: 25px;
+		height: 25px;
+		border-radius: 25px;
+	}
+
+	@media (min-width: 992px) and (min-height: 1366px) {
 		width: 30px;
 		height: 30px;
 		border-radius: 30px;
 	}
-
-	@media (min-width: 992px) and (min-height: 1366px) {
-		width: 40px;
-		height: 40px;
-		border-radius: 40px;
-	}
 `;
 
-export default App;
+export default Game;
