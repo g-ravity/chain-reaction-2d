@@ -2,7 +2,7 @@ import Avatar from 'avataaars';
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import difference from 'lodash/difference';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { IPlayer } from '../types/Player';
 import { allColors, avatarValues, lobbyMembers } from '../utils/constants';
 import AvatarMaker from './AvatarMaker';
@@ -10,19 +10,20 @@ import { Atom } from './Game';
 import { Input } from './Home';
 import { TColor } from '../types/Common';
 import Button from '../reusableComponents/Button';
+import { TRoom } from '../types/Room';
 
 /**
  * Types
  */
-interface ILobbyProps {
-	roomId: string;
-}
+type TLobbyProps = {
+	roomId: TRoom['roomId'];
+};
 
 /**
  * Components
  */
-const Lobby = ({ roomId }: ILobbyProps): JSX.Element => {
-	console.log(roomId);
+const Lobby: React.FC = () => {
+	const { roomId } = useParams<TLobbyProps>();
 	const history = useHistory();
 
 	return (

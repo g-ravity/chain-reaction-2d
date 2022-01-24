@@ -12,23 +12,23 @@ import { TColor } from '../types/Common';
  */
 type TDirection = 'left' | 'right' | 'up' | 'down';
 
-interface GridCell {
+type TGridCell = {
 	hNeighbours: Array<number>;
 	vNeighbours: Array<number>;
 	explodeDirections: Array<TDirection>;
 	count: number;
 	maxCount: number;
 	explode: boolean;
-}
+};
 
-type Grid = Array<Array<GridCell>>;
+type TGrid = Array<Array<TGridCell>>;
 
-interface IAddAtom {
+type TAddAtomArgs = {
 	row: number;
 	col: number;
-	latestGrid: Grid;
+	latestGrid: TGrid;
 	isClicked?: boolean;
-}
+};
 
 /**
  * Utility Functions
@@ -40,7 +40,7 @@ const playAudio = () => {
 	clonedAudio.play();
 };
 
-const explosionAnimation = ({ row, col, elem, type }: { row: number; col: number; elem: GridCell; type: 'PLAY' | 'RESET' }): void => {
+const explosionAnimation = ({ row, col, elem, type }: { row: number; col: number; elem: TGridCell; type: 'PLAY' | 'RESET' }): void => {
 	switch (type) {
 		case 'PLAY': {
 			return elem.explodeDirections.forEach((direction) => {
@@ -67,13 +67,13 @@ const explosionAnimation = ({ row, col, elem, type }: { row: number; col: number
  * Component
  */
 const Game: React.FC = () => {
-	const [grid, setGrid] = useState<Grid>(undefined);
+	const [grid, setGrid] = useState<TGrid>(undefined);
 
 	const width = GRID_WIDTH;
 	const height = GRID_HEIGHT;
 
 	useEffect(() => {
-		const chainGrid: Grid = [];
+		const chainGrid: TGrid = [];
 		for (let i = 0; i < height; i += 1) {
 			chainGrid.push([]);
 			for (let j = 0; j < width; j += 1) {
@@ -110,7 +110,7 @@ const Game: React.FC = () => {
 		setGrid(chainGrid);
 	}, []);
 
-	const addAtom = ({ row, col, latestGrid, isClicked = false }: IAddAtom): void => {
+	const addAtom = ({ row, col, latestGrid, isClicked = false }: TAddAtomArgs): void => {
 		setTimeout(
 			() => {
 				const gridCell = latestGrid[row][col];

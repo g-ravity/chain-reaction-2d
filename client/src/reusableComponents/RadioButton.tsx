@@ -3,17 +3,17 @@ import React from 'react';
 /**
  * Types
  */
-interface RadioButtonProps {
+type TRadioButtonProps = {
 	label: string;
 	value: boolean;
 	htmlFor: string;
 	onChange: () => void;
-}
+};
 
 /**
  * Components
  */
-const RadioButton = ({ label, value, onChange, htmlFor }: RadioButtonProps): JSX.Element => {
+const RadioButton = ({ label, value, onChange, htmlFor }: TRadioButtonProps): JSX.Element => {
 	return (
 		<label htmlFor={htmlFor} style={{ marginRight: '10px' }}>
 			<StyledRadioInput type="radio" checked={value} onChange={onChange} />

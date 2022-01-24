@@ -11,9 +11,7 @@ import { findOneAndUpdateQuery, findOneQuery, findQuery, saveQuery } from '../..
 /**
  * Types
  */
-type TCreateRoomArgs = {
-	maxMemberCount: number;
-};
+type TCreateRoomArgs = Pick<TCleanRoom, 'maxMemberCount' | 'roomType'>;
 
 type TGetRoomsArgs = Pick<TCleanRoom, 'roomType' | 'hasGameStarted'> & {
 	isRoomFull?: boolean;
@@ -26,6 +24,7 @@ type TJoinRoomArgs = Pick<TCleanRoom, 'roomId'>;
  */
 export const CreateRoomSchema: yup.SchemaOf<TCreateRoomArgs> = yup.object({
 	maxMemberCount: yup.number().required(),
+	roomType: yup.mixed().oneOf(['PUBLIC', 'PRIVATE']).required(),
 });
 
 export const GetRoomsSchema: yup.SchemaOf<TGetRoomsArgs> = yup.object({
@@ -47,6 +46,7 @@ export const createRoom = async (_: unknown, { params }: { params: TCreateRoomAr
 
 		const room = new RoomModel({
 			maxMemberCount: params.maxMemberCount,
+			roomType: params.roomType,
 			roomId: generateId({ length: 6 }),
 		} as Pick<IRoomModel, 'maxMemberCount' | 'roomId'>);
 

@@ -15,6 +15,7 @@ type PlayerJoinedRoom {
 
 input CreateRoomArgs {
   maxMemberCount: Int!
+  roomType: GameRoomEnum!
 }
 
 input GetRoomsArgs {

@@ -4,15 +4,15 @@ import React from 'react';
 /**
  * Types
  */
-interface ILoaderProps {
+type TLoaderProps = {
 	color?: string;
 	width: number;
-}
+};
 
 /**
  * Components
  */
-const Loader = ({ color, width }: ILoaderProps): JSX.Element => {
+const Loader = ({ color, width }: TLoaderProps): JSX.Element => {
 	return (
 		<LoaderDiv color={color} width={width} className="d-flex align-items-center justify-content-center">
 			<div className="lds-ring">

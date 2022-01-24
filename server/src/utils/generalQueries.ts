@@ -22,7 +22,7 @@ export const findQuery = async <T>(
 
 	const res = await data.lean().exec();
 
-	return res as unknown as Record<string, unknown>[];
+	return res;
 };
 
 export const findOneQuery = async <T>(Model: TModel<T>, params: FilterQuery<T>): Promise<Record<string, unknown>> => {
