@@ -10,6 +10,7 @@ import path from 'path';
 import http from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import { config } from 'dotenv-safe';
+import cors from 'cors';
 import { GQLContext } from './types/General.types';
 import resolvers from './graphql/resolvers';
 import { logger } from './utils/logger';
@@ -17,8 +18,27 @@ import { pubsub } from './utils/redisHelpers';
 
 config();
 
+const whitelist = [process.env.FE_SERVICE_ENDPOINT, process.env.NODE_ENV !== 'prodiction' && 'http://localhost:3000'];
+
+const isAllowedOrigin = (origin = '', cb: (_: any, isAllowed: boolean) => void): void => {
+	const isAllowed = whitelist.some((allowedOrigin) => !!origin.match(new RegExp(allowedOrigin)));
+	if (!origin || isAllowed) {
+		cb(null, true);
+	} else {
+		logger.error({ error: new Error(`Not allowed by CORS. Origin - ${origin}`) });
+		cb(null, false);
+	}
+};
+
+const corsOptions = {
+	credentials: true,
+	origin: isAllowedOrigin,
+};
+
 (async () => {
 	const app = express();
+
+	app.use(cors(corsOptions));
 
 	const schemaArray = loadFilesSync(path.join(__dirname, './graphql/schema/'));
 	const typeDefs = mergeTypeDefs(schemaArray);
