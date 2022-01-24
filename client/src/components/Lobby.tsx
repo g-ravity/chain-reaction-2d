@@ -2,12 +2,14 @@ import Avatar from 'avataaars';
 import React from 'react';
 import { Container } from 'react-bootstrap';
 import difference from 'lodash/difference';
+import { useHistory } from 'react-router-dom';
 import { IPlayer } from '../types/Player';
 import { allColors, avatarValues, lobbyMembers } from '../utils/constants';
 import AvatarMaker from './AvatarMaker';
 import { Atom } from './Game';
-import { Button, Input } from './Home';
+import { Input } from './Home';
 import { TColor } from '../types/Common';
+import Button from '../reusableComponents/Button';
 
 /**
  * Types
@@ -21,11 +23,18 @@ interface ILobbyProps {
  */
 const Lobby = ({ roomId }: ILobbyProps): JSX.Element => {
 	console.log(roomId);
+	const history = useHistory();
+
 	return (
 		<div
-			className="vw-100 vh-100 overflow-hidden d-flex flex-column justify-content-center"
+			className="vw-100 position-relative vh-100 overflow-hidden d-flex flex-column justify-content-center"
 			style={{ backgroundColor: 'var(--light)' }}
 		>
+			<span
+				className="d-block position-absolute lnr lnr-arrow-left"
+				style={{ top: '50px', left: '50px', cursor: 'pointer', fontSize: '2rem' }}
+				onClick={() => history.push('/')}
+			/>
 			<Container className="d-flex justify-content-between align-items-center">
 				<div className="w-100">
 					<h4>Choose Your Avatar</h4>
