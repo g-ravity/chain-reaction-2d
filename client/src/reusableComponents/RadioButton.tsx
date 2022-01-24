@@ -49,7 +49,7 @@ const StyledRadioInput = styled.input`
 		top: -2px;
 		left: -1px;
 		position: relative;
-		background-color: var(--color-3);
+		background-color: var(--color-yellow);
 		content: '';
 		display: inline-block;
 		visibility: visible;

@@ -6,6 +6,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import Game from './components/Game';
 import * as serviceWorker from './serviceWorker';
 import Home from './components/Home';
+import Lobby from './components/Lobby';
 
 ReactDOM.render(
 	<BrowserRouter>
@@ -15,6 +16,9 @@ ReactDOM.render(
 			</Route>
 			<Route path="/game" exact>
 				<Game />
+			</Route>
+			<Route path="/lobby" exact>
+				<Lobby roomId="123456" />
 			</Route>
 		</Switch>
 	</BrowserRouter>,

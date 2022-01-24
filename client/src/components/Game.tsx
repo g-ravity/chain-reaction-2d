@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import ReactDOMServer from 'react-dom/server';
 import isUndefined from 'lodash/isUndefined';
 import { ANIMATION_TIME, GRID_HEIGHT, GRID_WIDTH } from '../utils/constants';
+import { TColor } from '../types/Common';
 
 /**
  * Types
@@ -261,8 +262,8 @@ const Cell = styled.div`
 	}
 `;
 
-const Atom = styled.div`
-	background-color: var(--color-4);
+export const Atom = styled.div<{ color?: TColor }>`
+	background-color: ${(props) => (props.color ? `var(--color-${props.color})` : 'var(--color-red)')};
 	width: 15px;
 	height: 15px;
 	border-radius: 15px;

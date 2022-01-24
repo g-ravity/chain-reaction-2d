@@ -1,8 +1,11 @@
+import { TColor } from '../types/Common';
+
 export const GRID_WIDTH = 6;
 export const GRID_HEIGHT = 9;
 
 export const ANIMATION_TIME = 300;
 
+export const allColors: TColor[] = ['red', 'yellow', 'orange', 'purple', 'limegreen', 'green', 'blue', 'darkblue'];
 export const avatarValues = {
 	Top: [
 		'NoHair',
@@ -108,3 +111,92 @@ export const avatarValues = {
 	],
 	Skin: ['Tanned', 'Yellow', 'Pale', 'Light', 'Brown', 'DarkBrown', 'Black'],
 };
+
+// Dummy Data for FE
+export const lobbyMembers = [
+	{
+		name: 'Ravik',
+		color: 'red',
+		avatar: {
+			Top: 1,
+			Accessories: 1,
+			'Hair Color': 0,
+			'Facial Hair': 0,
+			'Facial Hair Color': 1,
+			Clothes: 1,
+			'Fabric Color': 2,
+			Eyes: 1,
+			Eyebrow: 1,
+			Mouth: 0,
+			Skin: 0,
+		},
+	},
+	{
+		name: 'Pranab',
+		color: 'green',
+		avatar: {
+			Top: 3,
+			Accessories: 2,
+			'Hair Color': 1,
+			'Facial Hair': 1,
+			'Facial Hair Color': 0,
+			Clothes: 0,
+			'Fabric Color': 1,
+			Eyes: 2,
+			Eyebrow: 2,
+			Mouth: 1,
+			Skin: 3,
+		},
+	},
+	{
+		name: 'Anish',
+		color: 'limegreen',
+		avatar: {
+			Top: 1,
+			Accessories: 1,
+			'Hair Color': 0,
+			'Facial Hair': 0,
+			'Facial Hair Color': 1,
+			Clothes: 1,
+			'Fabric Color': 2,
+			Eyes: 1,
+			Eyebrow: 1,
+			Mouth: 0,
+			Skin: 0,
+		},
+	},
+	{
+		name: 'Anish',
+		color: 'orange',
+		avatar: {
+			Top: 1,
+			Accessories: 1,
+			'Hair Color': 0,
+			'Facial Hair': 0,
+			'Facial Hair Color': 1,
+			Clothes: 1,
+			'Fabric Color': 2,
+			Eyes: 1,
+			Eyebrow: 1,
+			Mouth: 0,
+			Skin: 0,
+		},
+	},
+	{
+		name: 'Anish',
+		color: 'blue',
+		avatar: {
+			Top: 1,
+			Accessories: 1,
+			'Hair Color': 0,
+			'Facial Hair': 0,
+			'Facial Hair Color': 1,
+			Clothes: 1,
+			'Fabric Color': 2,
+			Eyes: 1,
+			Eyebrow: 1,
+			Mouth: 0,
+			Skin: 0,
+		},
+	},
+];

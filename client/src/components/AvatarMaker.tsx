@@ -6,7 +6,7 @@ import { avatarValues } from '../utils/constants';
 /**
  * Types
  */
-type TAvatar =
+export type TAvatar =
 	| 'Top'
 	| 'Accessories'
 	| 'Hair Color'

@@ -21,7 +21,6 @@ const Home: React.FC = () => {
 			case 'JOIN_ROOM': {
 				return (
 					<>
-						<Input required placeholder="Enter Your Name *" />
 						<Input placeholder="Private Room Link/Code *" />
 						<Button style={{ marginBottom: '15px' }}>Join Private Room</Button>
 						<div className="d-flex">
@@ -35,7 +34,6 @@ const Home: React.FC = () => {
 			case 'CREATE_ROOM': {
 				return (
 					<>
-						<Input required placeholder="Enter Your Name *" />
 						<Input required type="number" placeholder="No. of Players *" min={2} max={8} />
 						<div style={{ height: '50px' }} className="d-flex align-items-center">
 							<RadioButton
@@ -86,11 +84,11 @@ const Home: React.FC = () => {
 /**
  * Styled Components
  */
-const Input = styled.input`
+export const Input = styled.input`
 	:focus {
 		outline: 0;
 	}
-	border: 2px solid var(--color-3);
+	border: 2px solid var(--color-yellow);
 	height: 50px;
 	font-family: Arvo;
 	padding: 10px;
@@ -98,10 +96,10 @@ const Input = styled.input`
 	margin: 10px;
 `;
 
-const Button = styled.button`
+export const Button = styled.button`
 	border: none;
 	outline: 0;
-	background-color: var(--color-3);
+	background-color: var(--color-yellow);
 	color: var(--light);
 	padding: 10px;
 	border-radius: 5px;
